@@ -1,28 +1,9 @@
 import unittest
-from pathlib import Path
 
 import pandas as pd
 
 from study_ml.utils import add_nutrients, parse_diary, search_products
-
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
-DIARY_PATH = DATA_DIR / "diet_diary.csv"
-USDA_DIR = DATA_DIR / "FoodData_Central_csv_2026-04-30"
-FINAL_PATH = DATA_DIR / "CompleteDietDiary.csv"
-
-NUTRIENT_COLUMNS = [
-    "energy_kcal",
-    "protein_g",
-    "fat_g",
-    "carbohydrates_g",
-    "fiber_g",
-    "sugars_g",
-    "saturated_fat_g",
-    "cholesterol_mg",
-    "sodium_mg",
-    "potassium_mg",
-    "water_g",
-]
+from tests.common import DIARY_PATH, FINAL_PATH, NUTRIENT_COLUMNS, USDA_DIR
 
 
 class FinalTableTest(unittest.TestCase):
