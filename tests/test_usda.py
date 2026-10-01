@@ -1,14 +1,9 @@
 import unittest
-from pathlib import Path
 
 import pandas as pd
 
 from study_ml.utils import parse_diary, search_products
-
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
-DIARY_PATH = DATA_DIR / "diet_diary.csv"
-USDA_DIR = DATA_DIR / "FoodData_Central_csv_2026-04-30"
-RESULT_PATH = DATA_DIR / "usda_matches.csv"
+from tests.common import DIARY_PATH, RESULT_PATH, USDA_DIR
 
 
 class SearchProductsTest(unittest.TestCase):

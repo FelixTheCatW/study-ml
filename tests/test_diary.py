@@ -1,28 +1,15 @@
 import unittest
-from pathlib import Path
 
 import pandas as pd
 
 from study_ml.utils import MEAL_COLUMNS, parse_diary
-
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
-DIARY_PATH = DATA_DIR / "diet_diary.csv"
-PARSED_PATH = DATA_DIR / "parsed_diary.csv"
+from tests.common import DIARY_PATH, PARSED_PATH, summarize
 
 
 class ParseDiaryTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.parsed = parse_diary(DIARY_PATH)
-
-    @staticmethod
-    def _summary(series: pd.Series) -> dict[str, float]:
-        return {
-            "mean": round(float(series.mean()), 2),
-            "median": round(float(series.median()), 2),
-            "min": float(series.min()),
-            "max": float(series.max()),
-        }
 
     def test_parse_diary_saves_result(self) -> None:
         self.parsed.to_csv(PARSED_PATH, index=False)
@@ -54,9 +41,9 @@ class ParseDiaryTest(unittest.TestCase):
             "weight_max": float(parsed["weight"].max()),
         }
         per_user = {
-            "dates_per_user": self._summary(dates_per_user),
-            "meals_per_user": self._summary(meals_per_user),
-            "products_per_user": self._summary(products_per_user),
+            "dates_per_user": summarize(dates_per_user),
+            "meals_per_user": summarize(meals_per_user),
+            "products_per_user": summarize(products_per_user),
         }
 
         print("Статистика таблицы продуктов:")
