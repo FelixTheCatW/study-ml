@@ -8,8 +8,11 @@ USDA_DIR = DATA_DIR / "FoodData_Central_csv_2026-04-30"
 PARSED_PATH = DATA_DIR / "parsed_diary.csv"
 RESULT_PATH = DATA_DIR / "usda_matches.csv"
 FINAL_PATH = DATA_DIR / "CompleteDietDiary.csv"
+DAILY_PATH = DATA_DIR / "daily_table.csv"
 
 KEY_COLUMNS = ["id", "date", "meal", "product"]
+
+DROPNA_COLUMN = "energy_kcal"
 
 NUTRIENT_COLUMNS = [
     "energy_kcal",
@@ -50,3 +53,27 @@ def summarize(series: pd.Series) -> dict[str, float]:
         "min": float(series.min()),
         "max": float(series.max()),
     }
+
+
+def aggregate_by_user_day(
+    table: pd.DataFrame,
+    drop_column: str = DROPNA_COLUMN,
+) -> pd.DataFrame:
+    """Агрегирует итоговую таблицу по (id, date).
+
+    Сначала убирает строки с пропуском в ``drop_column``, затем суммирует
+    нутриенты за день и считает число приёмов пищи и продуктов.
+    """
+    data = table.dropna(subset=[drop_column])
+    daily = (
+        data.groupby(["id", "date"])
+        .agg(
+            meals=("meal", "nunique"),
+            products=("product", "size"),
+            start_weight=("start_weight", "first"),
+            weight=("weight", "first"),
+            **{column: (column, "sum") for column in NUTRIENT_COLUMNS},
+        )
+        .reset_index()
+    )
+    return daily
