@@ -9,6 +9,7 @@ PARSED_PATH = DATA_DIR / "parsed_diary.csv"
 RESULT_PATH = DATA_DIR / "usda_matches.csv"
 FINAL_PATH = DATA_DIR / "CompleteDietDiary.csv"
 DAILY_PATH = DATA_DIR / "daily_table.csv"
+MEAL_PATH = DATA_DIR / "daily_meal_table.csv"
 
 KEY_COLUMNS = ["id", "date", "meal", "product"]
 
@@ -56,8 +57,8 @@ def summarize(series: pd.Series) -> dict[str, float]:
 
 
 def aggregate_by_user_day(
-    table: pd.DataFrame,
-    drop_column: str = DROPNA_COLUMN,
+        table: pd.DataFrame,
+        drop_column: str = DROPNA_COLUMN,
 ) -> pd.DataFrame:
     """Агрегирует итоговую таблицу по (id, date).
 
@@ -77,3 +78,12 @@ def aggregate_by_user_day(
         .reset_index()
     )
     return daily
+
+
+def aggregate_by_user_meal(table: pd.DataFrame, drop_column: str = DROPNA_COLUMN) -> pd.DataFrame:
+    data = table.dropna(subset=[drop_column])
+    return (
+        data.groupby(["id", "date", "meal"])
+        .agg(products=("product", "size"), **{column: (column, "sum") for column in NUTRIENT_COLUMNS})
+        .reset_index()
+    )
